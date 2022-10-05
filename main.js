@@ -2,61 +2,56 @@ const prompt = require('prompt-sync')({sigint: true});
 
 //To Do List App with Command Line Interface
 
-let option = 0
-
-console.log("Welcome to your action tracker!!");
-console.log(); //leaves a blank space between lines
-
-selectOption()
-
+let option = 0;
 let toDoList = [];
 let status = [];
 
-while (option !== 6) {
-    if (option ===1) {
+console.log("Welcome to your action tracker!!\n");
+selectOption();
+
+while (option !== 6) { //Loop includes all options except exit
+    if (option ===1) { //add to do item
         console.log('\n~ Creating a new to-do item ~');
         console.log('What is the item called?');
-        
-        //add to do item
         let addItem = prompt ('> ');
         while(addItem.length <1){ //checks input for empty string
             console.log("Please input a valid task");
-            addItem = prompt ('Please try again:> ');
+            addItem = prompt ('> ');
         }
-
         toDoList.push(addItem); //adds the task to the array
         status.push("Not Complete"); //sets the initial status at incomplete
-        console.log(); //leaves a blank space between lines
-        displayList();
-         //reprompt the user
-         selectOption()
-     }else if (option ===2) {
+        displayList(); //displays the current list
+        selectOption(); //reprompt the user
+     }else if (option ===2) { //complete an item
+        if(toDoList.length > 0){ //verfies there are items in the list
         console.log('\n~ Completeing a to-do item ~');
         console.log('Which to-do item would you like to mark complete? Please enter the item number');
-        
-        //complete an item
-        let newStatus = prompt ('> ')
-        status[newStatus-1]="Complete"
-        //leaves a blank space between lines
-        displayList()
-        //reprompt the user
-        selectOption()
-    } else if (option ===3) {
+        displayList();
+        let newStatus = Number(prompt ('> '));
+        while (isNaN(newStatus)===true || 0>=newStatus || newStatus>status.length){ //verfies they entered a valid number
+            console.log(`Please enter a valid item number between 1 and ${status.length}`);
+            newStatus = Number(prompt ('> '));
+            status[newStatus-1]="Complete";
+            displayList();
+            selectOption();
+            }
+        }
+        else { //reminds user they must enter an item before they can modify it
+            console.log("You must enter an item to the list before you can modify it's status");
+            displayList();
+            selectOption();
+        }
+    } else if (option ===3) {  //un-complete an item
         console.log('\n~ Un-completeing a to-do item ~');
         console.log('Which to-do item would you like to mark as un-complete? Please enter the item number');
-        
-        //complete an item
-        let newStatus = prompt ('> ')
-        status[newStatus-1]="Not Complete"
-        
-        displayList()
-        //reprompt the user
-        selectOption()
-    }else if (option ===4) {
+        let newStatus = prompt ('> ');
+        status[newStatus-1]="Not Complete";
+        displayList();
+        selectOption(); //reprompt the user
+    }else if (option ===4) { //delete an item
         console.log('\n~ Deleting a to-do item ~');
         console.log('Which to-do item would you like to delete? Please enter the item number');
-        
-        //delete an item
+        displayList();
         let del = prompt ('> ');
         console.log(`Please verify you want to delete ${toDoList[del-1]}`);//confirm delete request
         let challenge = prompt ('yes or no> ');
@@ -64,32 +59,25 @@ while (option !== 6) {
             toDoList.splice(del-1,1); //deletes the task from the array
         status.splice(del-1,1); //deletes the status from the array
         displayList();
-        //reprompt the user
-        selectOption();
+        selectOption(); //reprompt the user
         } else{
             displayList();
-            //reprompt the user
-            selectOption();
+            selectOption();//reprompt the user
         }
-    }else if (option ===5) {
+    }else if (option ===5) { //edit an item
         console.log('\n~ Editing a to-do item ~');
         console.log('Which to-do item would you like to edit? Please enter the item number');
-        
-        //delete an item
         let edit = prompt ('> ');
         console.log(`Please verify you want to edit ${toDoList[edit-1]}.  Note this will automatically reset the status to Not Complete.`);//confirm edit request
         let challenge = prompt ('yes or no> ');
         if (challenge === "yes") {
-            let revision = prompt ('Enter the new task> ')
+            let revision = prompt ('Enter the new task> ');
             toDoList[edit-1] = revision;
-            status[edit-1]="Not Complete"
-
-        displayList();
-        //reprompt the user
-        selectOption();
+            status[edit-1]="Not Complete";
+            displayList();
+            selectOption();
         } else{
             displayList();
-            //reprompt the user
             selectOption();
         }
     }
@@ -105,7 +93,6 @@ console.log();
 //Global Functions for the program
 function selectOption(){
     console.log("  Select an Action \n");
-    // console.log();
     console.log("[1] Create a to-do item");
     console.log("[2] Complete a to-do item");
     console.log("[3] Un-Complete a to-do item");
@@ -117,14 +104,13 @@ function selectOption(){
 
 function displayList(){
     if(toDoList.length === 0){
-        console.log("Your list is empty.");
+        console.log("Your list is empty. \n");
     }else {
-        console.log(`\n You have ${toDoList.length} to-do item(s)`);
+        console.log(`\n You have ${toDoList.length} to-do item(s) \n`);
     }
     for(let i = 0; i < toDoList.length; i++){
-        console.log(`${i+1}. ${toDoList[i]}  [${status[i]}]`);
-        
-}console.log();//leaves a blank space between lines
+        console.log(`${i+1}. [${status[i]}] ${toDoList[i]} \n`);  
+    }
 }
 
 
